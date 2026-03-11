@@ -1,12 +1,15 @@
 const Form = document.getElementById("pokeForm")
 const Input = document.getElementById("pokeInput")
-const Container = document.getElementById("mainContainer")
-
+const mainContainer = document.getElementById("mainContainer")
+const overlay = document.getElementById("overlay")
 const controlsDiv = document.getElementById("controls")
     const prevBtn = document.getElementById("prev")
     const pageDiv = document.getElementById("page")
     const nextBtn = document.getElementById("next")
 
+const sidePanel = document.getElementById("sidePanelInfo")
+const pokeProfile = document.getElementById("pokeProfile")
+    const pokeProfileImg = document.getElementById("pokeProfileImg")
 let loading = false
 let allPokes;
 fetchPokes()
@@ -33,7 +36,7 @@ async function filterPokes(name) {
 }
 
 async function showPokes(filteredPokes) {
-    Container.innerHTML=""
+    mainContainer.innerHTML=""
     for(const pokemon of filteredPokes.slice(offset,offset + limit)){
         const response = await fetch(pokemon.url)
         const pokeData = await response.json()
@@ -56,7 +59,7 @@ async function showPokes(filteredPokes) {
 
         pokeType1.textContent= capitalize(pokeData.types[0].type.name)
         pokeTypeDiv.append(pokeType1)
-
+        pokeDiv.style.background=`var(--${pokeData.types[0].type.name})`
         
         if(pokeData.types[1]!==undefined){
             let pokeType2 = document.createElement("div")
@@ -64,11 +67,12 @@ async function showPokes(filteredPokes) {
             pokeType2.classList.add("pokeType", pokeData.types[1].type.name)
             pokeType2.style.backgroundColor=`var(--${pokeData.types[1].type.name})`
             pokeType2.textContent = capitalize(pokeData.types[1].type.name)
-
+            pokeDiv.style.background=`linear-gradient(to right, var(--${pokeData.types[0].type.name}) 50%, var(--${pokeData.types[1].type.name}) 50%)`
             pokeTypeDiv.append(pokeType2)
         }
+        pokeDiv.dataset.id = JSON.stringify(pokeData)
         pokeDiv.append(pokeTypeDiv)
-        Container.append(pokeDiv)
+        mainContainer.append(pokeDiv)
     }
     
 }
@@ -101,3 +105,18 @@ Form.addEventListener("submit", async (event)=>{
     searchQuery = Input.value
     filterPokes(searchQuery)
 })
+mainContainer.addEventListener("click",(e)=>{
+    if(e.target.closest(".pokeDiv")){
+        overlay.classList.remove("hidden")
+        loadSidePanel()
+        console.log(e.target.closest(".pokeDiv").dataset.id)
+    }
+})
+
+overlay.addEventListener("click",(e)=>{
+    overlay.classList.add("hidden")
+})
+
+function loadSidePanel(pokeData){
+    pokeProfileImg.src=pokeData.sprites.front_default
+}

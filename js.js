@@ -2,57 +2,102 @@ const Form = document.getElementById("pokeForm")
 const Input = document.getElementById("pokeInput")
 const Container = document.getElementById("mainContainer")
 
-async function fetchAllPokes() {
-    let response = await fetch("https://pokeapi.co/api/v2/pokemon/?limit=1025")
-    let allPokes = await response.json();
-    return allPokes
+const controlsDiv = document.getElementById("controls")
+    const prevBtn = document.getElementById("prev")
+    const pageDiv = document.getElementById("page")
+    const nextBtn = document.getElementById("next")
+
+let loading = false
+let allPokes;
+fetchPokes()
+
+let searchQuery;
+
+let offset = 0
+let limit = 50
+async function fetchPokes() {
+    loading = true
+    let response = await fetch(`https://pokeapi.co/api/v2/pokemon/?limit=1025`)
+    allPokes = await response.json();
+    loading = false
 }
 
+
+
 async function filterPokes(name) {
-    let allPokes = await fetchAllPokes()
+    loading = true
     let filteredPokes = allPokes.results.filter(poke=>poke.name.includes(name))
-    showPokes(filteredPokes)
+    await showPokes(filteredPokes)
+    loading = false
     return filteredPokes
 }
 
 async function showPokes(filteredPokes) {
     Container.innerHTML=""
-    for(const pokemon of filteredPokes){
-        response = await fetch(pokemon.url)
-        pokeData = await response.json()
+    for(const pokemon of filteredPokes.slice(offset,offset + limit)){
+        const response = await fetch(pokemon.url)
+        const pokeData = await response.json()
 
         let pokeDiv = document.createElement("div")
-        let pokeImg = document.createElement("img")
-        let pokeName = document.createElement("p")
-        let pokeId = document.createElement("p")
-        let pokeType1 = document.createElement("p")
-
         pokeDiv.classList.add("pokeDiv")
-        pokeImg.classList.add("pokeImg")
-        pokeName.classList.add("pokeName")
-        pokeId.classList.add("pokeId")
-        pokeType1.classList.add("pokeType")
+        pokeDiv.innerHTML=`
+        <img src=${pokeData.sprites.other.dream_world.front_default || 
+                    pokeData.sprites.other["official-artwork"].front_default
+        } class="pokeImg"></img>
+        <div class="pokeName">${capitalize(pokeData.name)}<div>
+        <div class="pokeId">#${pokeData.id}</div>
+        `
+        let pokeTypeDiv = document.createElement("div")
+        let pokeType1 = document.createElement("div")
+        pokeType1.style.backgroundColor=`var(--${pokeData.types[0].type.name})`
 
-        pokeImg.src=pokeData.sprites.front_default
-        pokeName.textContent= pokeData.name
-        pokeId.textContent="#" + pokeData.id
-        pokeType1.textContent= pokeData.types[0].type.name
-        pokeDiv.append(pokeImg, pokeName, pokeId, pokeType1)
+        pokeTypeDiv.classList.add("pokeTypeDiv")
+        pokeType1.classList.add("pokeType", pokeData.types[0].type.name)
 
+        pokeType1.textContent= capitalize(pokeData.types[0].type.name)
+        pokeTypeDiv.append(pokeType1)
+
+        
         if(pokeData.types[1]!==undefined){
-            let pokeType2 = document.createElement("p")
-            pokeType2.textContent = pokeData.types[1].type.name
-            pokeType2.classList.add("pokeType")
-            pokeDiv.append(pokeType2)
-        }
+            let pokeType2 = document.createElement("div")
 
+            pokeType2.classList.add("pokeType", pokeData.types[1].type.name)
+            pokeType2.style.backgroundColor=`var(--${pokeData.types[1].type.name})`
+            pokeType2.textContent = capitalize(pokeData.types[1].type.name)
+
+            pokeTypeDiv.append(pokeType2)
+        }
+        pokeDiv.append(pokeTypeDiv)
         Container.append(pokeDiv)
     }
     
 }
-
+prevBtn.addEventListener("click",(e)=>{
+    if(offset !== 0){
+        if(loading) return;
+    offset-=50
+    console.log(limit)
+    filterPokes(searchQuery)
+    }
+})
+nextBtn.addEventListener("click",(e)=>{
+    if(offset + limit < 1025){
+        if(loading) return;
+    offset+=50
+    filterPokes(searchQuery)
+    }
+})
+function capitalize(string){
+    if(string.length === 0){
+        return ""
+    } else {
+        return string.charAt(0).toUpperCase() + string.slice(1)
+    }
+}
 Form.addEventListener("submit", async (event)=>{
+    if(loading) return;
+    offset = 0
     event.preventDefault();
-    let searchQuery = Input.value
+    searchQuery = Input.value
     filterPokes(searchQuery)
 })

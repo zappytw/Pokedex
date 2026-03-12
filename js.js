@@ -10,26 +10,39 @@ const controlsDiv = document.getElementById("controls")
 const sidePanel = document.getElementById("sidePanelInfo")
 const pokeProfile = document.getElementById("pokeProfile")
     const pokeProfileImg = document.getElementById("pokeProfileImg")
+        const shinyVfx = document.getElementById("shinyVfx")
     const pokeProfileName = document.getElementById("pokeProfileName")
     const pokeProfileId = document.getElementById("pokeProfileId")
     const cryBtn = document.getElementById("cryBtn")
+    const shinyBtn = document.getElementById("shinyBtn")
 
 const audioPlink = new Audio("plink.mp3")
 const pokeCry = new Audio
     pokeCry.volume= 0.4
+const pokeShiny = new Audio("shinySfx.mp3")
+const pokeDeShiny = new Audio("deShinySfx.mp3")
+
+let squishTimeout;
+let shinyTimeout;
 
 let loading = false
 let allPokes;
 fetchPokes()
-
-let searchQuery;
+let tempPokeData
+let searchQuery = ""
+let shinyActive = false
 
 let offset = 0
 let limit = 50
 async function fetchPokes() {
     loading = true
-    let response = await fetch(`https://pokeapi.co/api/v2/pokemon/?limit=1025`)
-    allPokes = await response.json();
+    if(localStorage.getItem("pokesData") === null){
+        let response = await fetch(`https://pokeapi.co/api/v2/pokemon/?limit=1025`)
+        allPokes = (await response.json()).results;
+    localStorage.setItem("pokesData",JSON.stringify(allPokes))
+    } else {
+        allPokes = JSON.parse(localStorage.getItem("pokesData"))
+    }
     loading = false
 }
 
@@ -37,7 +50,7 @@ async function fetchPokes() {
 
 async function filterPokes(name) {
     loading = true
-    let filteredPokes = allPokes.results.filter(poke=>poke.name.includes(name))
+    let filteredPokes = allPokes.filter(poke=>poke.name.includes(name))
     await showPokes(filteredPokes)
     loading = false
     return filteredPokes
@@ -78,7 +91,7 @@ async function showPokes(filteredPokes) {
             pokeDiv.style.background=`linear-gradient(to right, var(--${pokeData.types[0].type.name}) 50%, var(--${pokeData.types[1].type.name}) 50%)`
             pokeTypeDiv.append(pokeType2)
         }
-        pokeDiv.dataset.id = JSON.stringify(pokeData)
+        pokeDiv.dataset.id = pokeData.id
         pokeDiv.append(pokeTypeDiv)
         mainContainer.append(pokeDiv)
     }
@@ -88,6 +101,7 @@ prevBtn.addEventListener("click",(e)=>{
     if(offset !== 0){
         if(loading) return;
     offset-=50
+    pageDiv.textContent= "Page " + (1 + (offset/50 || 0))
     filterPokes(searchQuery)
     }
 })
@@ -95,6 +109,7 @@ nextBtn.addEventListener("click",(e)=>{
     if(offset + limit < 1025){
         if(loading) return;
     offset+=50
+    pageDiv.textContent= "Page "  + (1 + (offset/50 || 0))
     filterPokes(searchQuery)
     }
 })
@@ -123,32 +138,75 @@ mainContainer.addEventListener("click",(e)=>{
 
 overlay.addEventListener("click",(e)=>{
     if(!e.target.closest(".sidePanel")){
-        audioPlink.pause()
-        audioPlink.currentTime=0
-        pokeCry.pause()
-        pokeCry.currentTime=0
+        stopAudio(audioPlink)
+        stopAudio(pokeCry)
+        stopAudio(pokeShiny)
+        stopAudio(pokeDeShiny)
         overlay.classList.add("hidden")
     }
 
 })
 function cerearNumero(numero, nCaracteres){
     let lenNumero = String(numero).length
-    nCeros = nCaracteres - lenNumero
-    return numeroCereado = "0".repeat(nCeros) + numero
+    let nCeros = nCaracteres - lenNumero
+    return "0".repeat(nCeros) + numero
 
 }
-function loadSidePanel(pokeData){
-    pokeData = JSON.parse(pokeData)
-
+async function loadSidePanel(id){
+    shinyActive = false
+    const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`)
+    const pokeData = await response.json()
+    tempPokeData = pokeData
     audioPlink.play()
-    pokeCry.src = pokeData.cries.latest
-    pokeCry.play()
-
+    pokeCry.src = pokeData.cries.latest || "fallbackCry.mp3"
+    pokeCry.onerror = () => {
+        pokeCry.src = "fallbackCry.mp3"}
+    
     pokeProfileImg.src= pokeData.sprites.other["official-artwork"].front_default
     pokeProfileName.textContent = capitalize(pokeData.species.name)
     pokeProfileId.textContent = "#" + cerearNumero(pokeData.id, 4)
+    pokeCry.play()
 }
 
 cryBtn.addEventListener("click",()=>{
     pokeCry.play()
 })
+shinyBtn.addEventListener("click",()=>{
+    if(!tempPokeData) return;
+    shinyActive = !shinyActive
+
+    pokeProfileImg.src = shinyActive
+        ? showShiny()
+        : showDefault()
+})
+function stopAudio(audio){
+    audio.pause()
+    audio.currentTime = 0
+}
+function showShiny(){
+    shinyVfx.classList.remove("hidden")
+    shinyVfx.src="shinySparkleVfx.gif?" + Date.now()
+    if(shinyTimeout){
+        clearTimeout(shinyTimeout)
+    }
+    shinyTimeout = setTimeout(() => {
+        shinyVfx.classList.add("hidden")
+    }, 900);
+    pokeShiny.play()
+    stopAudio(pokeDeShiny)
+    return tempPokeData.sprites.other["official-artwork"].front_shiny
+}
+function showDefault(){
+    shinyVfx.classList.add("hidden")
+    pokeProfileImg.classList.add("squish")
+    if(squishTimeout){
+        clearTimeout(squishTimeout)
+    }
+    squishTimeout = setTimeout(() => {
+        pokeProfileImg.classList.remove("squish")
+    }, 500);
+    pokeDeShiny.play()
+    stopAudio(pokeShiny)
+    return tempPokeData.sprites.other["official-artwork"].front_default
+}
+filterPokes("")

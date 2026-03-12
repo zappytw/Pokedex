@@ -21,7 +21,7 @@
     <div class="bottomBar">
         <div id="controls">
             <button id="prev" class="pageBtn">Previous</button>
-            <div id="page"> ???? </div>
+            <div id="page"> Page 1 </div>
             <button id="next" class="pageBtn">Next</button>
         </div>
     </div>
@@ -29,13 +29,19 @@
         <div class="sidePanel">
             <div id="sidePanelInfo">
                 <div id="pokeProfile">
-                    <img id="pokeProfileImg"></img>
+                    <div class="pokeProfileImgDiv">
+                        <img id="pokeProfileImg"></img>
+                        <img src="shinySparkleVfx.gif" class="hidden" id="shinyVfx">
+                    </div>
                     <div class="nameId">
                         <DIV>
                             <div id="pokeProfileName"></div>
                             <div id="pokeProfileId"></div>
                         </DIV>
-                        <button class="pageBtn" id="cryBtn">🔊</button>
+                        <div>
+                            <button class="pageBtn" id="shinyBtn">✨</button>
+                            <button class="pageBtn" id="cryBtn">🔊</button>
+                        </div>
                     </div>
                     <div id="pokeProfileTypeDiv" >
 

@@ -5,20 +5,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <link rel="stylesheet" href="css.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Lexend:wght@100..900&family=Outfit:wght@100..900&display=swap" rel="stylesheet">
 </head>
 <body>
-    <h1>-------</h1>
+    <h1>Buscador Pokémon</h1>
     <form action="" id="pokeForm">
-        <input type="text" id="pokeInput"> <button type="submit"></button>
+        <input type="text" id="pokeInput">
+        <button type="submit" class="pageBtn">SEARCH</button>
         
     </form>
     <hr>
     <div id="mainContainer"></div>
     <div class="bottomBar">
         <div id="controls">
-            <button id="prev" class="btn">Previous</button>
+            <button id="prev" class="pageBtn">Previous</button>
             <div id="page"> ???? </div>
-            <button id="next" class="btn">Next</button>
+            <button id="next" class="pageBtn">Next</button>
         </div>
     </div>
     <div class="hidden" id="overlay">
@@ -26,8 +30,13 @@
             <div id="sidePanelInfo">
                 <div id="pokeProfile">
                     <img id="pokeProfileImg"></img>
-                    <div id="pokeProfileName"></div>
-                    <div id="pokeProfileId"></div>
+                    <div class="nameId">
+                        <DIV>
+                            <div id="pokeProfileName"></div>
+                            <div id="pokeProfileId"></div>
+                        </DIV>
+                        <button class="pageBtn" id="cryBtn">🔊</button>
+                    </div>
                     <div id="pokeProfileTypeDiv" >
 
                     </div>

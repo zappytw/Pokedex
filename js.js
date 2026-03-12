@@ -10,6 +10,14 @@ const controlsDiv = document.getElementById("controls")
 const sidePanel = document.getElementById("sidePanelInfo")
 const pokeProfile = document.getElementById("pokeProfile")
     const pokeProfileImg = document.getElementById("pokeProfileImg")
+    const pokeProfileName = document.getElementById("pokeProfileName")
+    const pokeProfileId = document.getElementById("pokeProfileId")
+    const cryBtn = document.getElementById("cryBtn")
+
+const audioPlink = new Audio("plink.mp3")
+const pokeCry = new Audio
+    pokeCry.volume= 0.4
+
 let loading = false
 let allPokes;
 fetchPokes()
@@ -47,8 +55,8 @@ async function showPokes(filteredPokes) {
         <img src=${pokeData.sprites.other.dream_world.front_default || 
                     pokeData.sprites.other["official-artwork"].front_default
         } class="pokeImg"></img>
-        <div class="pokeName">${capitalize(pokeData.name)}<div>
-        <div class="pokeId">#${pokeData.id}</div>
+        <div class="pokeName">${capitalize(pokeData.species.name)}<div>
+        <div class="pokeId">#${cerearNumero(pokeData.id,4)}</div>
         `
         let pokeTypeDiv = document.createElement("div")
         let pokeType1 = document.createElement("div")
@@ -80,7 +88,6 @@ prevBtn.addEventListener("click",(e)=>{
     if(offset !== 0){
         if(loading) return;
     offset-=50
-    console.log(limit)
     filterPokes(searchQuery)
     }
 })
@@ -108,15 +115,40 @@ Form.addEventListener("submit", async (event)=>{
 mainContainer.addEventListener("click",(e)=>{
     if(e.target.closest(".pokeDiv")){
         overlay.classList.remove("hidden")
-        loadSidePanel()
-        console.log(e.target.closest(".pokeDiv").dataset.id)
+        sidePanel.parentElement.classList.add("sidePanelAnimate")
+        loadSidePanel(e.target.closest(".pokeDiv").dataset.id)
+
     }
 })
 
 overlay.addEventListener("click",(e)=>{
-    overlay.classList.add("hidden")
-})
+    if(!e.target.closest(".sidePanel")){
+        audioPlink.pause()
+        audioPlink.currentTime=0
+        pokeCry.pause()
+        pokeCry.currentTime=0
+        overlay.classList.add("hidden")
+    }
 
-function loadSidePanel(pokeData){
-    pokeProfileImg.src=pokeData.sprites.front_default
+})
+function cerearNumero(numero, nCaracteres){
+    let lenNumero = String(numero).length
+    nCeros = nCaracteres - lenNumero
+    return numeroCereado = "0".repeat(nCeros) + numero
+
 }
+function loadSidePanel(pokeData){
+    pokeData = JSON.parse(pokeData)
+
+    audioPlink.play()
+    pokeCry.src = pokeData.cries.latest
+    pokeCry.play()
+
+    pokeProfileImg.src= pokeData.sprites.other["official-artwork"].front_default
+    pokeProfileName.textContent = capitalize(pokeData.species.name)
+    pokeProfileId.textContent = "#" + cerearNumero(pokeData.id, 4)
+}
+
+cryBtn.addEventListener("click",()=>{
+    pokeCry.play()
+})

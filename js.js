@@ -6,13 +6,15 @@ const controlsDiv = document.getElementById("controls")
     const prevBtn = document.getElementById("prev")
     const pageDiv = document.getElementById("page")
     const nextBtn = document.getElementById("next")
-
-const sidePanel = document.getElementById("sidePanelInfo")
+const sidePanel = document.getElementById("sidePanel")
+const sidePanelInfo = document.getElementById("sidePanelInfo")
 const pokeProfile = document.getElementById("pokeProfile")
     const pokeProfileImg = document.getElementById("pokeProfileImg")
         const shinyVfx = document.getElementById("shinyVfx")
     const pokeProfileName = document.getElementById("pokeProfileName")
     const pokeProfileId = document.getElementById("pokeProfileId")
+    const pokeProfileTypeDiv = document.getElementById("pokeProfileTypeDiv")
+    const abilitiesDiv = document.getElementById("abilitiesDiv")
     const cryBtn = document.getElementById("cryBtn")
     const shinyBtn = document.getElementById("shinyBtn")
 
@@ -46,7 +48,13 @@ async function fetchPokes() {
     loading = false
 }
 
-
+async function colorPokemon(name) {
+    name = name.toLowerCase()
+    let response = await fetch(`https://pokeapi.co/api/v2/pokemon-species/${name}`)
+    let data = await response.json()
+    console.log(data)
+    return data.color.name
+}
 
 async function filterPokes(name) {
     loading = true
@@ -65,9 +73,11 @@ async function showPokes(filteredPokes) {
         let pokeDiv = document.createElement("div")
         pokeDiv.classList.add("pokeDiv")
         pokeDiv.innerHTML=`
-        <img src=${pokeData.sprites.other.dream_world.front_default || 
-                    pokeData.sprites.other["official-artwork"].front_default
-        } class="pokeImg"></img>
+        <div class="pokeImgDiv">
+            <img src=${pokeData.sprites.other.dream_world.front_default || 
+                        pokeData.sprites.other["official-artwork"].front_default
+            } class="pokeImg"></img>
+        </div>
         <div class="pokeName">${capitalize(pokeData.species.name)}<div>
         <div class="pokeId">#${cerearNumero(pokeData.id,4)}</div>
         `
@@ -123,6 +133,7 @@ function capitalize(string){
 Form.addEventListener("submit", async (event)=>{
     if(loading) return;
     offset = 0
+    pageDiv.textContent="Page " + 1
     event.preventDefault();
     searchQuery = Input.value
     filterPokes(searchQuery)
@@ -130,14 +141,14 @@ Form.addEventListener("submit", async (event)=>{
 mainContainer.addEventListener("click",(e)=>{
     if(e.target.closest(".pokeDiv")){
         overlay.classList.remove("hidden")
-        sidePanel.parentElement.classList.add("sidePanelAnimate")
+        sidePanelInfo.parentElement.classList.add("sidePanelAnimate")
         loadSidePanel(e.target.closest(".pokeDiv").dataset.id)
 
     }
 })
 
 overlay.addEventListener("click",(e)=>{
-    if(!e.target.closest(".sidePanel")){
+    if(e.target !== sidePanel && !e.target.closest("#sidePanelInfo")){
         stopAudio(audioPlink)
         stopAudio(pokeCry)
         stopAudio(pokeShiny)
@@ -154,9 +165,13 @@ function cerearNumero(numero, nCaracteres){
 }
 async function loadSidePanel(id){
     shinyActive = false
+    pokeProfileTypeDiv.innerHTML=""
     const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`)
     const pokeData = await response.json()
     tempPokeData = pokeData
+
+    sidePanel.style.backgroundColor = `color-mix(in srgb, ${await colorPokemon(pokeData.name)} 50%, white)`
+
     audioPlink.play()
     pokeCry.src = pokeData.cries.latest || "fallbackCry.mp3"
     pokeCry.onerror = () => {
@@ -165,6 +180,23 @@ async function loadSidePanel(id){
     pokeProfileImg.src= pokeData.sprites.other["official-artwork"].front_default
     pokeProfileName.textContent = capitalize(pokeData.species.name)
     pokeProfileId.textContent = "#" + cerearNumero(pokeData.id, 4)
+    let pokeType1 = document.createElement("div")
+
+        pokeType1.style.backgroundColor=`var(--${pokeData.types[0].type.name})`
+        pokeType1.classList.add("pokeType", pokeData.types[0].type.name)
+
+        pokeType1.textContent= capitalize(pokeData.types[0].type.name)
+        pokeProfileTypeDiv.append(pokeType1)
+        
+        if(pokeData.types[1]!==undefined){
+            let pokeType2 = document.createElement("div")
+
+            pokeType2.classList.add("pokeType", pokeData.types[1].type.name)
+            pokeType2.style.backgroundColor=`var(--${pokeData.types[1].type.name})`
+
+            pokeType2.textContent = capitalize(pokeData.types[1].type.name)
+            pokeProfileTypeDiv.append(pokeType2)
+        }
     pokeCry.play()
 }
 

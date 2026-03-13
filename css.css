@@ -108,7 +108,7 @@ body{
     flex-direction: row;
     gap: 20px;
     position: relative;
-    background-color: white;
+    background-color: transparent;
 }
 .bottomBar{
     position: fixed;
@@ -143,9 +143,6 @@ body{
     background-color: #FFD369;
     color: #222831;
 }
-#controls{
-    background-color: transparent;
-}
 .pokeDiv:hover{
     transform: scale(1.1);
 }
@@ -175,6 +172,7 @@ body{
     border-radius: 15px;
 }
 #sidePanelInfo{
+    position: relative;
     background-color: #222831;
     width: 100%;
     height: 100%;
@@ -184,6 +182,7 @@ body{
     padding: 15px;
     box-sizing: border-box;
     border-radius: 15px;
+    overflow-y: auto;
 }
 #pokeProfile{
     display: flex;
@@ -249,6 +248,11 @@ body{
     position: relative;
     background-color: #393E46;
     border-radius: 15px;
+    width: 300px;
+    height: 300px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 #shinyVfx{
     position: absolute;
@@ -275,4 +279,74 @@ body{
     justify-content: left;
     text-align: left;
     width: 100%;
+}
+
+#loadingSpinner{
+    width: 100px;
+    height: 100px;
+    animation: spin 0.4s ease-in-out infinite;
+    position: absolute;
+    left: 100px;
+}
+@keyframes spin {
+    100%{
+        transform: rotate(180deg);
+    }
+}
+
+.statDiv{
+    display: flex;
+    justify-content: space-between;
+}
+
+.hpDiv, .atkDiv, .defDiv, .spaDiv, .spdDiv, .speDiv{
+    display: flex;
+    flex-direction: column;
+    width: 300px;
+    gap: 3px;
+    margin: 6px 0;
+}
+
+#pokeStats{
+    display: flex;
+    flex-direction: column;
+    justify-self: center;
+}
+.statBarDiv{
+    width: 100%;
+    background-color: #393E46;
+    height: 15px;
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+}
+
+.statBarDiv div{
+    background-color: #FFD369;
+    width: 0px;
+    height: 15px;
+}
+.exitSidePanel{
+    width: 50px;
+    height: 50px;
+    background-color: #222831;
+    border: 4px solid #FFD369;
+    color: #FFD369;
+    border-radius: 15px;
+    position: absolute;
+    right: 5px;
+    top: 5px;
+    font-weight: bold;
+    transition: ease-in-out 0.1s;
+}
+
+.exitSidePanel:hover{
+    background-color: #FFD369;
+    color: #222831;
+}
+@media (max-width: 720px) {
+    #sidePanel{
+        width: 100%;
+    }
 }

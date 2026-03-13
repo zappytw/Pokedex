@@ -28,10 +28,12 @@
     <div class="hidden" id="overlay">
         <div id="sidePanel">
             <div id="sidePanelInfo">
+                <button class="exitSidePanel" onclick="exitSidePanel()">X</button>
                 <div id="pokeProfile">
                     <div class="pokeProfileImgDiv">
                         <img id="pokeProfileImg"></img>
                         <img src="shinySparkleVfx.gif" class="hidden" id="shinyVfx">
+                        <img src="loading.png" alt="" class="hidden" id="loadingSpinner">
                     </div>
 
                     <div class="nameId">
@@ -50,11 +52,74 @@
                     </div>
 
                 </div>
-                <div id="pokeAbilities">
-                    <div>Abilities</div>
-                    <div id="abilitiesDiv"></div>
-                </div>
                 <div id="pokeStats">
+                    <div class="hpDiv">
+                        <div class="statDiv">
+                            <div>HP</div>
+                            <div id="hp">??</div>
+                        </div>
+                        <div class="statBarDiv">
+                            <div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="atkDiv">
+                        <div class="statDiv">
+                            <div>Attack</div>
+                            <div id="atk">??</div>
+                        </div>
+                        <div class="statBarDiv">
+                            <div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="defDiv">
+                        <div class="statDiv">
+                            <div>Defense</div>
+                            <div id="def">??</div>
+                        </div>
+                        <div class="statBarDiv">
+                            <div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="spaDiv">
+                        <div class="statDiv">
+                            <div>Sp. Attack</div>
+                            <div id="spa">??</div>
+                        </div>
+                        <div class="statBarDiv">
+                            <div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="spdDiv">
+                        <div class="statDiv">
+                            <div>Sp. Defense</div>
+                            <div id="spd">??</div>
+                        </div>
+                        
+                        <div class="statBarDiv">
+                            <div>
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="speDiv">
+                        <div class="statDiv">
+                            <div>Speed</div>
+                            <div id="spe">??</div>
+                        </div>
+                        <div class="statBarDiv">
+                            <div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="pokeAbilities">
+                    <div></div>
+                    <div id="abilitiesDiv"></div>
                 </div>
 
             </div>

@@ -11,15 +11,25 @@ const sidePanelInfo = document.getElementById("sidePanelInfo")
 const pokeProfile = document.getElementById("pokeProfile")
     const pokeProfileImg = document.getElementById("pokeProfileImg")
         const shinyVfx = document.getElementById("shinyVfx")
+        const spinner = document.getElementById("loadingSpinner")
+            let spinnerTimeOut; 
     const pokeProfileName = document.getElementById("pokeProfileName")
     const pokeProfileId = document.getElementById("pokeProfileId")
     const pokeProfileTypeDiv = document.getElementById("pokeProfileTypeDiv")
     const abilitiesDiv = document.getElementById("abilitiesDiv")
+
+    const hp = document.getElementById("hp")
+    const atk = document.getElementById("atk")
+    const def = document.getElementById("def")
+    const spa = document.getElementById("spa")
+    const spd = document.getElementById("spd")
+    const spe = document.getElementById("spe")
+
     const cryBtn = document.getElementById("cryBtn")
     const shinyBtn = document.getElementById("shinyBtn")
 
 const audioPlink = new Audio("plink.mp3")
-const pokeCry = new Audio
+const pokeCry = new Audio()
     pokeCry.volume= 0.4
 const pokeShiny = new Audio("shinySfx.mp3")
 const pokeDeShiny = new Audio("deShinySfx.mp3")
@@ -52,7 +62,6 @@ async function colorPokemon(name) {
     name = name.toLowerCase()
     let response = await fetch(`https://pokeapi.co/api/v2/pokemon-species/${name}`)
     let data = await response.json()
-    console.log(data)
     return data.color.name
 }
 
@@ -78,7 +87,7 @@ async function showPokes(filteredPokes) {
                         pokeData.sprites.other["official-artwork"].front_default
             } class="pokeImg"></img>
         </div>
-        <div class="pokeName">${capitalize(pokeData.species.name)}<div>
+        <div class="pokeName">${capitalize(pokeData.species.name)}</div>
         <div class="pokeId">#${cerearNumero(pokeData.id,4)}</div>
         `
         let pokeTypeDiv = document.createElement("div")
@@ -92,7 +101,7 @@ async function showPokes(filteredPokes) {
         pokeTypeDiv.append(pokeType1)
         pokeDiv.style.background=`var(--${pokeData.types[0].type.name})`
         
-        if(pokeData.types[1]!==undefined){
+        if(pokeData.types[1]){
             let pokeType2 = document.createElement("div")
 
             pokeType2.classList.add("pokeType", pokeData.types[1].type.name)
@@ -135,28 +144,44 @@ Form.addEventListener("submit", async (event)=>{
     offset = 0
     pageDiv.textContent="Page " + 1
     event.preventDefault();
-    searchQuery = Input.value
+    searchQuery = Input.value.toLowerCase().trim().replace(/\s+/g,"-")
     filterPokes(searchQuery)
 })
 mainContainer.addEventListener("click",(e)=>{
     if(e.target.closest(".pokeDiv")){
         overlay.classList.remove("hidden")
         sidePanelInfo.parentElement.classList.add("sidePanelAnimate")
+        loadingImg(pokeProfileImg,false)
         loadSidePanel(e.target.closest(".pokeDiv").dataset.id)
 
     }
 })
 
+function loadingImg(img,delay=true){
+    if(delay){
+    spinnerTimeOut = setTimeout(() => {
+        img.classList.add("hidden")
+        spinner.classList.remove("hidden")
+    }, 100);
+    } else {
+        img.classList.add("hidden")
+        spinner.classList.remove("hidden")
+    }
+}
+function exitSidePanel(){
+    stopAudio(audioPlink)
+    stopAudio(pokeCry)
+    stopAudio(pokeShiny)
+    stopAudio(pokeDeShiny)
+    overlay.classList.add("hidden")
+}
 overlay.addEventListener("click",(e)=>{
     if(e.target !== sidePanel && !e.target.closest("#sidePanelInfo")){
-        stopAudio(audioPlink)
-        stopAudio(pokeCry)
-        stopAudio(pokeShiny)
-        stopAudio(pokeDeShiny)
-        overlay.classList.add("hidden")
+        exitSidePanel()
     }
 
 })
+
 function cerearNumero(numero, nCaracteres){
     let lenNumero = String(numero).length
     let nCeros = nCaracteres - lenNumero
@@ -177,7 +202,7 @@ async function loadSidePanel(id){
     pokeCry.onerror = () => {
         pokeCry.src = "fallbackCry.mp3"}
     
-    pokeProfileImg.src= pokeData.sprites.other["official-artwork"].front_default
+    pokeProfileImg.src= pokeData.sprites.other["official-artwork"].front_default|| pokeData.sprites.front_default
     pokeProfileName.textContent = capitalize(pokeData.species.name)
     pokeProfileId.textContent = "#" + cerearNumero(pokeData.id, 4)
     let pokeType1 = document.createElement("div")
@@ -197,6 +222,7 @@ async function loadSidePanel(id){
             pokeType2.textContent = capitalize(pokeData.types[1].type.name)
             pokeProfileTypeDiv.append(pokeType2)
         }
+    assignStats(getStats(pokeData))
     pokeCry.play()
 }
 
@@ -207,15 +233,18 @@ shinyBtn.addEventListener("click",()=>{
     if(!tempPokeData) return;
     shinyActive = !shinyActive
 
+    loadingImg(pokeProfileImg);
     pokeProfileImg.src = shinyActive
-        ? showShiny()
+        ? tempPokeData.sprites.other["official-artwork"].front_shiny
         : showDefault()
 })
 function stopAudio(audio){
     audio.pause()
     audio.currentTime = 0
 }
-function showShiny(){
+
+
+function shinyFx(){
     shinyVfx.classList.remove("hidden")
     shinyVfx.src="shinySparkleVfx.gif?" + Date.now()
     if(shinyTimeout){
@@ -226,7 +255,6 @@ function showShiny(){
     }, 900);
     pokeShiny.play()
     stopAudio(pokeDeShiny)
-    return tempPokeData.sprites.other["official-artwork"].front_shiny
 }
 function showDefault(){
     shinyVfx.classList.add("hidden")
@@ -239,6 +267,42 @@ function showDefault(){
     }, 500);
     pokeDeShiny.play()
     stopAudio(pokeShiny)
-    return tempPokeData.sprites.other["official-artwork"].front_default
+    return tempPokeData.sprites.other["official-artwork"].front_default|| tempPokeData.sprites.front_default
 }
+function assignStats(stats){
+    hp.textContent=stats[0]
+    atk.textContent=stats[1]
+    def.textContent=stats[2]
+    spa.textContent=stats[3]
+    spd.textContent=stats[4]
+    spe.textContent=stats[5]
+
+    document.querySelectorAll(".statBarDiv").forEach((e, i) => {
+        const bar = e.children[0]
+        let progress = (stats[i] / 150) * 100
+        bar.style.width=progress + "%"
+    });
+}
+function getStats(data){
+    let stats = [];
+    data.stats.forEach(stat => {
+        stats.push(stat.base_stat)
+    });
+    return stats
+}
+pokeProfileImg.addEventListener("load", () => {
+    spinner.classList.add("hidden")
+    pokeProfileImg.classList.remove("hidden")
+    clearTimeout(spinnerTimeOut) 
+    if (pokeProfileImg.src===tempPokeData.sprites.other["official-artwork"].front_shiny){
+        shinyFx()
+    }
+})
+
+
+
+
 filterPokes("")
+
+
+

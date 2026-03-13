@@ -279,9 +279,29 @@ function assignStats(stats){
 
     document.querySelectorAll(".statBarDiv").forEach((e, i) => {
         const bar = e.children[0]
-        let progress = (stats[i] / 150) * 100
+        let progress = (stats[i] / 255) * 100
         bar.style.width=progress + "%"
+        barColor(bar,progress)
     });
+}
+
+function barColor(bar, progress){
+
+    let statProgress;
+    if(progress < 33){
+        statProgress = (progress / 33) * 100
+        bar.style.backgroundColor=`color-mix(in srgb, var(--stat-low), var(--stat-33) ${statProgress}%)`
+    } else if(progress < 66){
+        statProgress = ((progress - 33)/33) * 100
+        bar.style.backgroundColor=`color-mix(in srgb, var(--stat-33), var(--stat-66) ${statProgress}%)`
+
+    } else if(progress < 99){
+        statProgress = ((progress - 66) / 33) * 100
+        bar.style.backgroundColor=`color-mix(in srgb, var(--stat-66), var(--stat-max) ${statProgress}%)`
+    
+    } else {
+        bar.style.backgroundColor="var(--stat-max)"
+    }
 }
 function getStats(data){
     let stats = [];

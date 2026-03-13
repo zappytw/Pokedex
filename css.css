@@ -326,6 +326,7 @@ body{
     background-color: #FFD369;
     width: 0px;
     height: 15px;
+    transition: ease-in-out 0.6s;
 }
 .exitSidePanel{
     width: 50px;

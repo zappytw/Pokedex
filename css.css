@@ -77,6 +77,7 @@ body{
     justify-content: center;
     flex-direction: row;
     gap: 10px;
+    flex-wrap: wrap;
 }
 
 #pokeProfileTypeDiv{
@@ -243,6 +244,7 @@ body{
     position: absolute;
     pointer-events: none;
     display: none;
+    opacity: 0;
 }
 #cryBtn, #shinyBtn{
     width: auto;
@@ -283,7 +285,7 @@ body{
     }
 }
 
-#pokeWeaknesses{
+#pokeEffectiveness{
     display: flex;
     flex-direction: column;
     align-items: left;
@@ -368,4 +370,20 @@ body{
 
 #hp, #atk, #def, #spa, #spd, #spe{
     user-select: text;
+}
+.typeEffectiveness{
+    justify-content: left;
+}
+.effectivenessDiv{
+    margin-bottom: 20px;
+    margin-top: 10px;
+    display: flex;
+    gap: 10px;
+    flex-direction: column;
+
+}
+
+#typeEfectivenessContainer{
+    width: 370px;
+    align-self: center;
 }

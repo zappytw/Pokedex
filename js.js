@@ -17,6 +17,16 @@ const pokeProfile = document.getElementById("pokeProfile")
     const pokeProfileId = document.getElementById("pokeProfileId")
     const pokeProfileTypeDiv = document.getElementById("pokeProfileTypeDiv")
     const abilitiesDiv = document.getElementById("abilitiesDiv")
+    const typeEfectivenessContainer = document.getElementById("typeEfectivenessContainer")
+        const typeEffectivenessDivs = typeEfectivenessContainer.children
+        const quadrupleDiv = document.getElementById("quadruple")
+        const doubleDiv = document.getElementById("double")
+        const singleDiv = document.getElementById("single")
+        const halfDiv = document.getElementById("half")
+        const quarterDiv = document.getElementById("quarter")
+        const inmuneDiv = document.getElementById("inmune")
+
+        
 
     const hp = document.getElementById("hp")
     const atk = document.getElementById("atk")
@@ -91,24 +101,12 @@ async function showPokes(filteredPokes) {
         <div class="pokeId">#${cerearNumero(pokeData.id,4)}</div>
         `
         let pokeTypeDiv = document.createElement("div")
-        let pokeType1 = document.createElement("div")
-        pokeType1.style.backgroundColor=`var(--${pokeData.types[0].type.name})`
-
         pokeTypeDiv.classList.add("pokeTypeDiv")
-        pokeType1.classList.add("pokeType", pokeData.types[0].type.name)
+        createTypes(getTypes(pokeData),pokeTypeDiv)
 
-        pokeType1.textContent= capitalize(pokeData.types[0].type.name)
-        pokeTypeDiv.append(pokeType1)
         pokeDiv.style.background=`var(--${pokeData.types[0].type.name})`
-        
         if(pokeData.types[1]){
-            let pokeType2 = document.createElement("div")
-
-            pokeType2.classList.add("pokeType", pokeData.types[1].type.name)
-            pokeType2.style.backgroundColor=`var(--${pokeData.types[1].type.name})`
-            pokeType2.textContent = capitalize(pokeData.types[1].type.name)
             pokeDiv.style.background=`linear-gradient(to right, var(--${pokeData.types[0].type.name}) 50%, var(--${pokeData.types[1].type.name}) 50%)`
-            pokeTypeDiv.append(pokeType2)
         }
         pokeDiv.dataset.id = pokeData.id
         pokeDiv.append(pokeTypeDiv)
@@ -116,24 +114,17 @@ async function showPokes(filteredPokes) {
     }
     
 }
-function createTypes(data,div){
-    div.classList.add("pokeTypeDiv")
+function createTypes(types,div){
 
-    let pokeType1 = document.createElement("div")
-    pokeType1.classList.add("pokeType", data.types[0].type.name)
-    pokeType1.style.backgroundColor=`var(--${data.types[0].type.name})`
-
-    pokeType1.textContent= capitalize(data.types[0].type.name)
-    div.append(pokeType1)
-
-    if(data.types[1]){
-        let pokeType2 = document.createElement("div")
-        pokeType2.classList.add("pokeType", data.types[1].type.name)
-        pokeType2.style.backgroundColor=`var(--${data.types[1].type.name})`
-        pokeType2.textContent = capitalize(data.types[1].type.name)
-        div.append(pokeType2)
-    }
+    types.forEach(type => {
+        let pokeType = document.createElement("div")
+        pokeType.classList.add("pokeType")
+        pokeType.style.backgroundColor=`var(--${type})`
+        pokeType.textContent = capitalize(type)
+        div.append(pokeType)
+    });
 }
+
 function getTypes(data){
     let types=[]
     types.push(data.types[0].type.name)
@@ -233,10 +224,11 @@ async function loadSidePanel(id){
     pokeProfileName.textContent = capitalize(pokeData.species.name)
     pokeProfileId.textContent = "#" + cerearNumero(pokeData.id, 4)
 
-    createTypes(pokeData,pokeProfileTypeDiv)
+    createTypes(getTypes(pokeData),pokeProfileTypeDiv)
 
     assignStats(getStats(pokeData))
     pokeCry.play()
+    createTypeEffectiveness(getTypes(pokeData))
 }
 
 cryBtn.addEventListener("click",()=>{
@@ -332,8 +324,126 @@ pokeProfileImg.addEventListener("load", () => {
     }
 })
 
+async function getAllTypes() {
+    let response = await fetch(`https://pokeapi.co/api/v2/type?limit=18`)
+    let typesData = await response.json() 
 
+    let types = []
+    typesData.results.forEach(type => {
+        types.push(type.name)
+    });
 
+    return types
+}
+async function createTypeEffectiveness(types){
+    let type1Effectivenesses = await getTypeEffectiveness(types[0])
+    let weaknesses1 = type1Effectivenesses[0]
+    let resistances1 = type1Effectivenesses[1]
+    let inmunities1 = type1Effectivenesses[2]
+
+    let type2Effectivenesses = []
+    if(types[1]){
+        type2Effectivenesses = await getTypeEffectiveness(types[1])
+    }
+
+    let weaknesses2 = type2Effectivenesses[0] || []
+    let resistances2 = type2Effectivenesses[1] || []
+    let inmunities2 = type2Effectivenesses[2] || []
+
+    let quadrupleDmg = [] // x4
+    let doubleDmg =    [] // x2
+    let singleDmg =    [] // x1
+    let halfDmg =      [] // x0.5
+    let quarterDmg =   [] // x0.25
+    let noDmg =        [] // x0 (Inmune)
+
+    let allTypes = await getAllTypes()
+
+    allTypes.forEach(type => {
+        let effectiveness = 1
+        if(weaknesses1.includes(type)){
+            effectiveness *= 2
+        }
+        if (weaknesses2.includes(type)){
+            effectiveness *= 2
+        }
+        if(resistances1.includes(type)){
+            effectiveness *= 0.5
+        }
+        if(resistances2.includes(type)){
+            effectiveness *= 0.5
+        }
+        if(inmunities1.includes(type) || inmunities2.includes(type)){
+            effectiveness *= 0
+        }
+
+        switch (effectiveness){
+            case 4:
+                quadrupleDmg.push(type)
+                break
+            case 2:
+                doubleDmg.push(type)
+                break
+            case 1:
+                singleDmg.push(type)
+                break
+            case 0.5:
+                halfDmg.push(type)
+                break
+            case 0.25:
+                quarterDmg.push(type)
+                break
+            case 0:
+                noDmg.push(type)
+                break
+        }
+    });
+    Array.from(typeEffectivenessDivs).forEach(div => {
+        div.classList.remove("hidden")
+        div.querySelector(".typeEffectiveness").textContent=""
+    });
+
+    createTypes(quadrupleDmg,quadrupleDiv)
+    createTypes(doubleDmg,doubleDiv)
+    createTypes(singleDmg,singleDiv)
+    createTypes(halfDmg,halfDiv)
+    createTypes(quarterDmg,quarterDiv)
+    createTypes(noDmg,inmuneDiv)
+
+    Array.from(typeEffectivenessDivs).forEach(div => {
+        if(div.querySelector(".typeEffectiveness").textContent===""){
+            div.classList.add("hidden")
+        }
+    });
+
+}
+
+async function getTypeEffectiveness(type) {
+    let response = await fetch(`https://pokeapi.co/api/v2/type/${type}`)
+    let typeData = await response.json()
+    let typeEffectiveness = []
+
+    let inmunities = []
+
+    typeData.damage_relations.no_damage_from.forEach(type => {
+        inmunities.push(type.name)
+    });
+
+    let resistances = []
+
+    typeData.damage_relations.half_damage_from.forEach(type => {
+        resistances.push(type.name)
+    });
+
+    let weaknesses = []
+
+    typeData.damage_relations.double_damage_from.forEach(type => {
+        weaknesses.push(type.name)
+    });
+
+    typeEffectiveness.push(weaknesses, resistances, inmunities)
+    return typeEffectiveness
+}
 
 filterPokes("")
 

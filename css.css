@@ -91,6 +91,7 @@ body{
     font-weight: bold;
     font-size: 14px;
     text-shadow: 1px 1px 3px black;
+    user-select: text;
 }
 .pokeImg{
     width: 96px;
@@ -212,10 +213,12 @@ body{
     font-size: 30px;
     color: white;
     font-weight: bold;
+    user-select:text;
 }
 #pokeProfileId{
     margin-top: 9px;
     color: #626b79;
+    user-select: text;
 }
 #pokeForm{
     display: flex;
@@ -350,4 +353,11 @@ body{
     #sidePanel{
         width: 100%;
     }
+}
+*{
+    user-select: none;
+}
+
+#hp, #atk, #def, #spa, #spd, #spe{
+    user-select: text;
 }

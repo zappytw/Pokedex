@@ -62,6 +62,3 @@ Este proyecto está en constante evolución. A continuación, las funcionalidade
    git clone [https://github.com/tu-usuario/nombre-de-tu-repo.git](https://github.com/tu-usuario/nombre-de-tu-repo.git)
    ```
 2. Abre el archivo index.html en tu navegador o usa una extensión como Live Server en VS Code.
-1. Clona este repositorio:
-   ```bash
-   git clone [https://github.com/tu-usuario/nombre-de-tu-repo.git](https://github.com/tu-usuario/nombre-de-tu-repo.git)

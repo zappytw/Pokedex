@@ -207,6 +207,7 @@ function cerearNumero(numero, nCaracteres){
 
 }
 async function loadSidePanel(id){
+    sidePanelInfo.scrollTop=0
     audioPlink.play()
     shinyActive = false
     pokeProfileTypeDiv.innerHTML=""
@@ -216,7 +217,7 @@ async function loadSidePanel(id){
 
     sidePanel.style.backgroundColor = `color-mix(in srgb, ${await colorPokemon(pokeData.name)} 50%, white)`
 
-    pokeCry.src = pokeData.cries.latest || "fallbackCry.mp3"
+    pokeCry.src = pokeData.cries.latest || pokeData.cries.legacy
     pokeCry.onerror = () => {
         pokeCry.src = "fallbackCry.mp3"}
     

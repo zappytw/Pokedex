@@ -1,64 +1,57 @@
-# 🔍 Pokedex App
+# Pokédex
 
-Una aplicación web moderna y dinámica para explorar el mundo Pokémon, construida con **JavaScript Vanilla**. Este proyecto consume la [PokéAPI](https://pokeapi.co/) para ofrecer datos en tiempo real, estadísticas detalladas y una experiencia de usuario fluida con animaciones personalizadas.
+> Interactive Pokédex powered by PokéAPI. Search any Pokémon, hear their cries, and discover their shiny forms with animated VFX.
 
-## ✨ Características Actuales
-
-- **Carga Eficiente:** Uso de `localStorage` para almacenar la lista de Pokémon y reducir las peticiones a la API.
-- **Búsqueda Avanzada:** Filtrado en tiempo real por nombre o ID.
-- **Interfaz Responsiva:** Diseño adaptativo que incluye un sistema de paginación (50 Pokémon por página).
-- **Panel Detallado (SidePanel):** - Visualización de tipos con colores dinámicos.
-  - Gráficos de barras de estadísticas base con gradientes de color según el valor.
-  - Sistema de efectos de sonido (Cries y efectos Shiny).
-  - Visualización de variantes Shiny con animaciones de destellos.
-- **Feedback Visual:** Spinners de carga y animaciones de "squish" al interactuar con las imágenes.
-
-## 🛠️ Tecnologías Utilizadas
-
-* **HTML5** - Estructura semántica.
-* **CSS3** - Variables personalizadas (`:root`), animaciones y Flexbox/Grid.
-* **JavaScript (ES6+)** - Manipulación del DOM, Fetch API y Programación Asíncrona.
-* **PokéAPI** - Fuente de datos externa.
-
-## 📸 Previsualización de la Interfaz
-
-> [!TIP]
-> Haz clic en cualquier tarjeta de Pokémon para abrir el panel lateral y ver sus estadísticas detalladas y escuchar su rugido.
+![Status](https://img.shields.io/badge/status-stable-success?style=flat-square)
+![Stack](https://img.shields.io/badge/stack-vanilla%20JS-yellow?style=flat-square)
+![API](https://img.shields.io/badge/api-PokeAPI-red?style=flat-square)
 
 ---
 
-## 🗺️ Roadmap de Implementaciones Futuras
+## Overview
 
-Este proyecto está en constante evolución. A continuación, las funcionalidades planeadas para las próximas versiones:
+A polished Pokédex built with vanilla HTML/CSS/JS that goes beyond the typical tutorial version: it includes Pokémon cries, a random shiny encounter mechanic, and animated visual effects. The goal was to push how much UX you can squeeze out of a no-framework project.
 
-### 🧬 Soporte Multi-Forma (Sidepanel Dinámico)
-- [ ] **Soporte para Formas Mega:** Evoluciones temporales con cambio de stats y tipos.
-- [ ] **Soporte para Formas Regionales:** Inclusión de variantes de Alola, Galar, Hisui y Paldea.
-- [ ] **Soporte para Formas Alternas:** Manejo de cambios estéticos y técnicos (ej. Rotom, Deoxys).
-- [ ] **Actualización en Tiempo Real:** El panel cambiará automáticamente estadísticas y tipos al conmutar entre formas.
+## Features
 
-### 📚 Información Expandida
-- [ ] **Habilidades (Abilities):** Mostrar descripción y efectos de las habilidades.
-- [ ] **Entradas de la Pokédex:** Descripciones individuales para cada Pokémon
-- [ ] **Línea Evolutiva:** Mapa visual de cómo evoluciona el Pokémon actual.
+- Browse and search Pokémon by name or ID via the PokéAPI
+- Display official artwork, types, stats, and basic information
+- Play each Pokémon's cry (with fallback audio for missing sounds)
+- Random shiny encounter mechanic with sparkle VFX and unique SFX
+- Smooth CSS animations and hover interactions
 
-### 🎒 Utilidades de Entrenador
-- [ ] **Sistema de Favoritos:** Guardar Pokémon preferidos usando `LocalStorage`.
-- [ ] **Constructor de Equipos (Team Builder):** Crear, nombrar y guardar equipos de 6 Pokémon.
-- [ ] **Análisis de Tipos:** Mostrar fortalezas y debilidades (Type Effectiveness) en el panel.
+## Stack
 
-### ⚔️ Módulos de Combate
-- [ ] **Calculadora de Daño:** Herramienta para medir el impacto de movimientos entre dos Pokémon.
+- HTML5 · CSS3 · JavaScript ES6+
+- [PokéAPI](https://pokeapi.co/) (REST)
+- No frameworks, no build tools
 
-### 🎨 Mejoras de UI/UX
-- [ ] **Modo Oscuro/Claro:** Soporte para temas personalizados.
-- [ ] **Filtros Avanzados:** Filtrar por tipo, generación o hábitat.
+## Project structure
+
+```
+pokedex/
+├── index.html
+├── css.css
+├── js.js
+└── /assets         Audio cries, SFX, and sparkle VFX
+```
+
+## Run locally
+
+```bash
+git clone https://github.com/zappytw/Pokedex.git
+cd Pokedex
+```
+
+Open `index.html`. No build, no dependencies.
+
+## What I learned building this
+
+- Working with multiple async resources (data + audio + images) in parallel
+- Adding sensory feedback (sound + motion) without overwhelming the user
+- Handling edge cases in third-party APIs (missing cries, missing sprites)
+- Building a cohesive visual identity with pure CSS
 
 ---
 
-## ⚙️ Instalación y Uso
-1. Clona este repositorio:
-   ```bash
-   git clone [https://github.com/tu-usuario/nombre-de-tu-repo.git](https://github.com/tu-usuario/nombre-de-tu-repo.git)
-   ```
-2. Abre el archivo index.html en tu navegador o usa una extensión como Live Server en VS Code.
+Built by **Joel Fayad** — Frontend Developer based in Colombia.
